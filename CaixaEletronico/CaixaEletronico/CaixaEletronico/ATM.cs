@@ -77,7 +77,7 @@ namespace CaixaEletronico
             int resto = DescontaValores(valor, listaNotas, "Foram usadas duas nota de 20, uma de 5 e 4 notas de 2");
             return resto;
         }
-
+         
         private int Desconta33(int valor)
         {
             var listaNotas = new List<int>() {
