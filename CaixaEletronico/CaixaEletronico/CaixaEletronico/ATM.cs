@@ -24,33 +24,35 @@ namespace CaixaEletronico
 
             if (valor >= cinquenta)
             {
-                resto = ((valor % 10) == 3) ?
-                   resto = Desconta53(valor) : DescontaValor(valor, cinquenta, $"Foi usada uma nota de {cinquenta}");
+                resto = ((valor % 10) == 3 || (valor % 10) == 8) ?
+                   resto = AjustaDesconto50(valor) : DescontaValor(valor, cinquenta, $"Foi usada uma nota de {cinquenta}");
             }
             else if (valor >= 40)
             {
-                resto = ((valor % 10) == 3) ?
-                    resto = Desconta43(valor) : DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
+                resto = ((valor % 10) == 3 || (valor % 10) == 8) ?
+                    resto = AjustaDesconto40(valor) : DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
             }
             else if (valor >= 30)
             {
-                resto = ((valor % 10) == 3) ?
-                    resto = Desconta33(valor) : DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
+                resto = ((valor % 10) == 3 || (valor % 10) == 8) ?
+                    resto = AjustaDesconto30(valor) : DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
             }
             else if (valor >= vinte)
             {
-                resto = ((valor % 10) == 3)? 
-                    resto = Desconta23(valor) : DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
+                resto = ((valor % 10) == 3 || (valor % 10) == 8) ?
+                    resto = AjustaDesconto20(valor) : DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
             }
             else if (valor >= dez)
             {
-              resto = ((valor % 10) == 3) ?
-                    resto = Desconta13(valor) : DescontaValor(valor, dez, $"Foi usada uma nota de {dez}");
+                resto = ((valor % 10) == 3 || (valor % 10) == 8) ?
+                      resto = AjustaDesconto10(valor) : DescontaValor(valor, dez, $"Foi usada uma nota de {dez}");
 
             }
             else if (valor >= cinco)
             {
-                resto = DescontaValor(valor, cinco, $"Foi usada uma nota de {cinco}");
+                resto = ((valor % 10) == 8) ?
+                      resto = Desconta8(valor) : DescontaValor(valor, cinco, $"Foi usada uma nota de {cinco}");
+                
             }
             else if (valor >= dois)
             {
@@ -69,30 +71,86 @@ namespace CaixaEletronico
             return Sacar(resto);
         }
 
-        private int Desconta53(int valor)
+        private int AjustaDesconto50(int valor)
         {
+            string logMsg = "Foram usadas duas notas de 20, uma de 5 e 4 notas de 2";
             var listaNotas = new List<int>() {
                 vinte, vinte, cinco, dois, dois, dois, dois
             };
-            int resto = DescontaValores(valor, listaNotas, "Foram usadas duas nota de 20, uma de 5 e 4 notas de 2");
-            return resto;
-        }
-         
-        private int Desconta33(int valor)
-        {
-            var listaNotas = new List<int>() {
-                vinte, cinco, dois, dois, dois, dois
-            };
-            int resto = DescontaValores(valor, listaNotas, "Foram usadas uma nota de 20, uma de 5 e 4 notas de 2");
+            if ((valor % 10) == 8)
+            {
+                listaNotas.Remove(cinco);
+                listaNotas.Add(dez);
+                logMsg = "Foram usadas duas notas de 20, uma de 10 e 4 notas de 2";
+            }
+            int resto = DescontaValores(valor, listaNotas, logMsg);
             return resto;
         }
 
-        private int Desconta43(int valor)
+        private int AjustaDesconto40(int valor)
         {
+            string logMsg = "Foram usadas uma nota de 20, uma de 10, uma de 5 e 4 notas de 2";
             var listaNotas = new List<int>() {
                 vinte, dez, cinco, dois, dois, dois, dois
             };
-            int resto = DescontaValores(valor, listaNotas, "Foram usadas uma nota de 20, uma de 10, uma de 5 e 4 notas de 2");
+            if ((valor % 10) == 8)
+            {
+                listaNotas.Remove(dez);
+                listaNotas.Remove(cinco);
+                listaNotas.Add(vinte);
+                logMsg = "Foram usadas duas notas de 20 e 4 notas de 2";
+            }
+            int resto = DescontaValores(valor, listaNotas, logMsg);
+            return resto;
+        }
+
+        private int AjustaDesconto30(int valor)
+        {
+            string logMsg = "Foram usadas uma nota de 20, uma de 5 e 4 notas de 2";
+            var listaNotas = new List<int>() {
+                vinte, cinco, dois, dois, dois, dois
+            };
+            if ((valor % 10) == 8)
+            {
+                listaNotas.Remove(cinco);
+                listaNotas.Add(dez);
+                logMsg = "Foram usadas uma nota de 20, uma de 10 e 4 notas de 2";
+            }
+            int resto = DescontaValores(valor, listaNotas, logMsg);
+            return resto;
+        }
+
+
+        private int AjustaDesconto20(int valor)
+        {
+            string logMsg = "Foram usadas uma nota de 10, uma de 5 e 4 notas de 2";
+            var listaNotas = new List<int>() {
+                dez, cinco, dois, dois, dois, dois
+            };
+            if ((valor % 10) == 8)
+            {
+                listaNotas.Remove(dez);
+                listaNotas.Remove(cinco);
+                listaNotas.Add(vinte);
+                logMsg = "Foram usadas uma nota de vinte e 4 notas de 2";
+            }
+            int resto = DescontaValores(valor, listaNotas, logMsg);
+            return resto;
+        }
+
+        private int AjustaDesconto10(int valor)
+        {
+            string logMsg = "uma nota de 5 e 4 notas de 2";
+            var listaNotas = new List<int>() {
+                cinco, dois, dois, dois, dois
+            };
+            if ((valor % 10) == 8)
+            {
+                listaNotas.Remove(cinco);
+                listaNotas.Add(dez);
+                logMsg = "Foram usadas uma nota de 10 e 4 notas de 2";
+            }
+            int resto = DescontaValores(valor, listaNotas, logMsg);
             return resto;
         }
 
@@ -114,23 +172,6 @@ namespace CaixaEletronico
             return resto;
         }
 
-        private int Desconta23(int valor)
-        {
-            var listaNotas = new List<int>() {
-                dez, cinco, dois, dois, dois, dois
-            };
-            int resto = DescontaValores(valor, listaNotas, "Foram usadas uma nota de 10, uma de 5 e 4 notas de 2");
-            return resto;
-        }
-
-        private int Desconta13(int valor)
-        {
-            var listaNotas = new List<int>() {
-                cinco, dois, dois, dois, dois
-            };
-            int resto = DescontaValores(valor, listaNotas, "Foram usadas uma nota de 5 e 4 notas de 2");
-            return resto;
-        }
 
         private int Desconta6(int valor)
         {
@@ -140,6 +181,17 @@ namespace CaixaEletronico
             saque.NotasUsadasLog.Add("Foram usadas 3 notas de 2");
             return resto;
         }
+
+
+        private int Desconta8(int valor)
+        {
+            int resto = valor - 8;
+            saque.HistoricoResto.Add(resto);
+            for (int i = 0; i < 4; i++) { saque.NotasUsadas.Add(dois); }
+            saque.NotasUsadasLog.Add("Foram usadas 4 notas de 2");
+            return resto;
+        }
+
 
         private void RemoveUltimoValorHistorico()
         {
