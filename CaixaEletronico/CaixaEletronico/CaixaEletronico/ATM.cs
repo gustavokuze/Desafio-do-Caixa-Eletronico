@@ -24,7 +24,8 @@ namespace CaixaEletronico
 
             if (valor >= cinquenta)
             {
-                resto = DescontaValor(valor, cinquenta);
+                resto = ((valor % 10) == 3) ?
+                   resto = DescontaValor(valor, dez) : DescontaValor(valor, cinquenta);
             }
             else if (valor >= vinte)
             {
@@ -33,14 +34,8 @@ namespace CaixaEletronico
             }
             else if (valor >= dez)
             {
-                if (valor == 13)
-                {
-                    resto = Desconta13Pila(valor);
-                }
-                else
-                {
-                    resto = DescontaValor(valor, dez);
-                }
+              resto = ((valor % 10) == 3) ?
+                    resto = Desconta13Pila(valor) : DescontaValor(valor, dez);
 
             }
             else if (valor >= cinco)
