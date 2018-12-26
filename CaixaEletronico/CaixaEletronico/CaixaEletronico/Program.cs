@@ -82,6 +82,13 @@ namespace CaixaEletronico
                     Menu();
                 }
 
+                if (!caixa.PossivelSacar(valor))
+                {
+                    Console.Clear();
+                    Console.Write($"Erro: Cédulas insuficientes para realizar o saque!\n\n");
+                    Menu();
+                }
+
                 var saqueResultado = caixa.Sacar(valor);
 
 
