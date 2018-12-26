@@ -62,26 +62,23 @@ namespace CaixaEletronico
         private static void Sacar()
         {
             Console.Clear();
-            caixa.renovaSaque();
+            caixa.RenovaSaque();
             Console.WriteLine("Digite o valor que deseja sacar: ");
             try
             {
                 int valor = Convert.ToInt32(Console.ReadLine());
-
-                if ((valor < 5)) {
-                    Console.Clear();
-                    Console.Write($"Para saques com valores menores do que 5 reais, visite o caixa\n");
-                    Menu();
-                } else if ((valor > 1000)) {
-                    Console.Clear();
-                    Console.Write($"Para saques com valores maiores do que 1000 reais, visite o caixa\n");
-                    Menu();
-                }
-
+                
                 if (valor >= caixa.Saldo)
                 {
                     Console.Clear();
                     Console.Write($"Erro: Saldo insuficiente!\n\n");
+                    Menu();
+                }
+
+                if (valor == 3 || valor == 1)
+                {
+                    Console.Clear();
+                    Console.Write($"Erro: Para o saque de moedas, visite o caixa!\n\n");
                     Menu();
                 }
 
