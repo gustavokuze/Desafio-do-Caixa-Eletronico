@@ -10,10 +10,10 @@ namespace CaixaEletronico
     public class ATM
     {
         public int Saldo { get; set; } = 0;
-        private const int dois = 2, cinco = 5, dez = 10, vinte = 20, cinquenta = 50;
         private Saque saque = new Saque();
-        public List<int> NotasDisponiveis { get; private set; } = new List<int>() {
-            cinquenta, vinte, vinte, vinte, vinte, vinte, vinte, vinte, vinte, vinte, vinte
+
+        public List<int> NotasDisponiveis { get; set; } = new List<int>() {
+            Notas.Cinquenta, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte
         };
 
         public void RenovaSaque()
@@ -26,89 +26,64 @@ namespace CaixaEletronico
             int resto = 0;
             if ((valor % 2) != 0)
             {
-                resto = DescontaValor(valor, cinco, "Foi usada uma nota de 5");
+                resto = DescontaValor(valor, Notas.Cinco, "Foi usada uma nota de 5");
             }
-            else if (valor >= cinquenta)
+            else if (valor >= Notas.Cinquenta)
             {
-                /*
-                    ao invés de fazer assim, deveria criar uma função "geraTrocado" 
-                    que retorna uma lista com o valor usando as notas disponíveis
-
-
-                    posso dentro do método criar uma cópia da lista de notas disponíveis 
-                    e ir removendo as notas nela mesma, pra não interferir na lista real
-
-
-
-                 */
-
-                if (NotaDisponivel(cinquenta))
+                var trocado = Utils.GerarTrocado(Notas.Cinquenta, NotasDisponiveis);
+                if (trocado != null && trocado.Count > 0)
                 {
-                    resto = DescontaValor(valor, cinquenta, $"Foi usada uma nota de {cinquenta}");
-                }
-                else if (NotasDisponiveis.Count(x => x == vinte) >= 2 && NotaDisponivel(dez))
-                {
-                    resto = DescontaValores(valor, new List<int>() { vinte, vinte, dez }, "Foram usadas 2 notas de 20 e uma de 10");
-                }
-                else if (NotasDisponiveis.Count(x => x == dez) >= 5)
-                {
-                    resto = DescontaValor(valor, 50, dez);
-                }
-                else if (NotasDisponiveis.Count(x => x == cinco) >= 10)
-                {
-                    resto = DescontaValor(valor, 50, cinco);
-                }
-                else if (NotasDisponiveis.Count(x => x == dois) >= 25)
-                {
-                    resto = DescontaValor(valor, 50, dois);
+                    resto = DescontaValores(valor, trocado, $"Foram usadas as seguintes notas: {trocado.Select(x => x.ToString() + ";")}");
                 }
                 else
                 {
-                    return saque; //preciso rever isso
+                    return saque; //rever isto
                 }
 
             }
             else if (valor >= 40)
             {
-                resto = DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
+                resto = DescontaValor(valor, Notas.Vinte, $"Foi usada uma nota de {Notas.Vinte}");
             }
             else if (valor >= 30)
             {
-                resto = DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
+                resto = DescontaValor(valor, Notas.Vinte, $"Foi usada uma nota de {Notas.Vinte}");
             }
-            else if (valor >= vinte)
+            else if (valor >= Notas.Vinte)
             {
-                resto = DescontaValor(valor, vinte, $"Foi usada uma nota de {vinte}");
+                resto = DescontaValor(valor, Notas.Vinte, $"Foi usada uma nota de {Notas.Vinte}");
             }
-            else if (valor >= dez)
+            else if (valor >= Notas.Dez)
             {
-                resto = DescontaValor(valor, dez, $"Foi usada uma nota de {dez}");
+                resto = DescontaValor(valor, Notas.Dez, $"Foi usada uma nota de {Notas.Dez}");
 
             }
-            else if (valor >= cinco)
+            else if (valor >= Notas.Cinco)
             {
                 if (valor % 10 == 8)
                 {
-                    resto = DescontaValor(valor, 8, dois);
+                    resto = DescontaValor(valor, 8, Notas.Dois);
                 }
                 else if (valor % 10 == 6)
                 {
-                    resto = DescontaValor(valor, 6, dois);
+                    resto = DescontaValor(valor, 6, Notas.Dois);
                 }
                 else
                 {
-                    DescontaValor(valor, cinco, $"Foi usada uma nota de {cinco}");
+                    DescontaValor(valor, Notas.Cinco, $"Foi usada uma nota de {Notas.Cinco}");
                 }
             }
-            else if (valor >= dois)
+            else if (valor >= Notas.Dois)
             {
-                resto = DescontaValor(valor, dois, $"Foi usada uma nota de {dois}");
+                resto = DescontaValor(valor, Notas.Dois, $"Foi usada uma nota de {Notas.Dois}");
             }
 
             if (valor == 0)
                 return saque;
             return Sacar(resto);
         }
+
+
 
         private int DescontaValor(int valor, int nota, string logMsg)
         {
@@ -143,7 +118,7 @@ namespace CaixaEletronico
             {
                 if (valor % 2 != 0)
                 {
-                    if (!NotaDisponivel(cinco))
+                    if (!NotaDisponivel(Notas.Cinco))
                     {
                         return false;
                     }
