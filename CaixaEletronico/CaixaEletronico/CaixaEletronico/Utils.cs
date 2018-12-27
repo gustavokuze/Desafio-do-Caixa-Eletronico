@@ -22,24 +22,28 @@ namespace CaixaEletronico
         /// Do contrário, retorna uma lista vazia</returns>
         public static List<int> CalculaTrocado(int valor, List<int> notasDisponiveis)
         {
+            Console.WriteLine("-(( Entrou na função CalculaTroco ))-");
             int restante = valor;
             List<int> notasAbaixoValor = notasDisponiveis.Where(x => x <= valor).OrderByDescending(x => x).ToList();
             List<int> notasUsadas = new List<int>();
 
             while (restante != 0)
             {
-                if (restante > 0)
+                //Console.WriteLine("** Entrou no loop while **");
+                if (restante > 1 && restante != 3)
                 {
-                    var nota = (valor % 10 == 0) ? notasAbaixoValor.FirstOrDefault() : notasAbaixoValor.Where(x => x == 5).FirstOrDefault();
-
+                    var nota = (restante % 2 == 0) ? notasAbaixoValor.FirstOrDefault() : notasAbaixoValor.Where(x => x == 5).FirstOrDefault();
+                    Console.WriteLine($"-(( Nota escolhida: {nota} ))-");
                     if (nota > 0)
                     {
                         restante -= nota;
-                        notasUsadas.Add(notasAbaixoValor.First());
-                        notasAbaixoValor.Remove(notasAbaixoValor.First());
+                        notasUsadas.Add(nota);
+                        notasAbaixoValor = notasDisponiveis.Where(x => x <= restante).OrderByDescending(x => x).ToList();
+                        notasAbaixoValor.Remove(nota);
                     }
                     else
                     {
+                        Console.WriteLine($"-(( Erro, a nota escolhida era menor ou igual a 0 ))-");
                         restante = 0;
                         notasUsadas.Clear();
                     }
@@ -49,11 +53,14 @@ namespace CaixaEletronico
                         return notasUsadas;
                     }
                 }
-                else if (restante < 0)
+                else if (restante < 0 || restante == 3 || restante == 1)
                 {
-                    int notaErrada = notasUsadas.Max();
+                    int notaErrada = notasUsadas.Last();
+                    Console.WriteLine($"-(( Revertendo nota [{notaErrada}] , o restante era menor que 1 ou era 3 ))-");
                     restante += notaErrada;
-                    notasUsadas.Remove(notaErrada); //reverte a ultima nota adicionada
+                    notasAbaixoValor = notasDisponiveis.Where(x => x <= restante).OrderByDescending(x => x).ToList();
+                    notasAbaixoValor.RemoveAll(x => x == notaErrada); 
+                    notasUsadas.Remove(notaErrada);
                 }
             }
 
