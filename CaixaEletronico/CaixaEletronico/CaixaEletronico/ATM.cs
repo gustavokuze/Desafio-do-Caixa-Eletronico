@@ -54,9 +54,11 @@ namespace CaixaEletronico
             if (trocado.Count > 0)
             {
                 DescontaValores(valor, trocado);
+                Console.WriteLine("-(( Valores descontados com sucesso, baseados no retorno da função CalculaTroco ))-");
+                Console.WriteLine($"-(( Cedulas disponiveis: 50 = { NotasDisponiveis.Where(x=>x==50).Count() }; 20 = { NotasDisponiveis.Where(x => x == 20).Count() }; 10 = { NotasDisponiveis.Where(x => x == 10).Count() }; 5 = { NotasDisponiveis.Where(x => x == 5).Count() }; 2 = { NotasDisponiveis.Where(x => x == 2).Count() } ))-");
                 return saque;
             }
-
+            Console.WriteLine("-(( Erro: A função CalculaTroco retornou vazio ))-");
             return new Saque();
         }
         

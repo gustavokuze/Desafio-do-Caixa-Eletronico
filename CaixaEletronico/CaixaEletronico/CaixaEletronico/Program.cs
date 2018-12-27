@@ -115,7 +115,7 @@ namespace CaixaEletronico
                 Console.Write($"Valor inválido. Por favor entre com um valor inteiro em reais, sem pontos, virgulas ou qualquer tipo de simbolo.\n\n");
                 Menu();
             }
-            Console.WriteLine("_________________________\n");
+            Console.WriteLine("____Fim saque____\n");
         }
 
         private static bool VerificacaoInicial(int valor)
