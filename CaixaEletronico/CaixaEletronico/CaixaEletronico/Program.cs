@@ -67,39 +67,26 @@ namespace CaixaEletronico
             try
             {
                 int valor = Convert.ToInt32(Console.ReadLine());
-                
-                if (valor >= caixa.Saldo)
-                {
-                    Console.Clear();
-                    Console.Write($"Erro: Saldo insuficiente!\n\n");
-                    Menu();
-                }
-
-                if (valor == 3 || valor == 1)
-                {
-                    Console.Clear();
-                    Console.Write($"Erro: Para o saque de moedas, visite o caixa!\n\n");
-                    Menu();
-                }
-
-                if (!caixa.PossivelSacar(valor))
-                {
-                    Console.Clear();
-                    Console.Write($"Erro: Cédulas insuficientes para realizar o saque!\n\n");
-                    Menu();
-                }
-
+                VerificacaoInicial(valor);
                 var saqueResultado = caixa.Sacar(valor);
 
-
-                for (int i = 0; i < saqueResultado.HistoricoResto.Count; i++)
+                if (saqueResultado.EstaValido())
                 {
-                    Console.Write($"{saqueResultado.NotasUsadasLog[i]}; Restou: {saqueResultado.HistoricoResto[i]}\n\n");
+                    for (int i = 0; i < saqueResultado.HistoricoResto.Count; i++)
+                    {
+                        Console.Write($"{saqueResultado.NotasUsadasLog[i]}\n\n");
+                    }
+                    int somaSaque = saqueResultado.NotasUsadas.Sum();
+                    Console.WriteLine($"Soma das notas usadas: {somaSaque}");
+                    caixa.Saldo -= somaSaque;
+                    Menu();
                 }
-                int somaSaque = saqueResultado.NotasUsadas.Sum();
-                Console.WriteLine($"Soma das notas usadas: {somaSaque}");
-                caixa.Saldo -= somaSaque;
-                Menu();
+                else
+                {
+                    MsgCedulasInsuficientes();
+                }
+
+                
             }
             catch (FormatException ex)
             {
@@ -107,6 +94,45 @@ namespace CaixaEletronico
                 Console.Write($"Valor inválido. Por favor entre com um valor inteiro em reais, sem pontos, virgulas ou qualquer tipo de simbolo.\n\n");
                 Menu();
             }
+        }
+
+        private static void VerificacaoInicial(int valor)
+        {
+            if (valor >= caixa.Saldo)
+            {
+                MsgSaldoInsuficiente();
+            }
+
+            if (valor == 3 || valor == 1)
+            {
+                MsgMoedas();
+            }
+
+            if (!caixa.SaquePossivelParaValor(valor))
+            {
+                MsgCedulasInsuficientes();
+            }
+        }
+
+        private static void MsgSaldoInsuficiente()
+        {
+            Console.Clear();
+            Console.Write($"Erro: Saldo insuficiente!\n\n");
+            Menu();
+        }
+
+        private static void MsgMoedas()
+        {
+            Console.Clear();
+            Console.Write($"Erro: Para o saque de moedas, visite o caixa!\n\n");
+            Menu();
+        }
+
+        private static void MsgCedulasInsuficientes()
+        {
+            Console.Clear();
+            Console.Write($"Erro: Cédulas insuficientes para realizar o saque!\n\n");
+            Menu();
         }
     }
 }

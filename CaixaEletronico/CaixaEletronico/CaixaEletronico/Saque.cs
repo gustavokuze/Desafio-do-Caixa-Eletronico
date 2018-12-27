@@ -11,5 +11,9 @@ namespace CaixaEletronico
         public List<int> NotasUsadas { get; set; } = new List<int>();
         public List<string> NotasUsadasLog { get; set; } = new List<string>();
         public List<int> HistoricoResto { get; set; } = new List<int>();
+        public bool EstaValido()
+        {
+            return (this.NotasUsadas.Count > 0 && this.NotasUsadasLog.Count > 0 && this.HistoricoResto.Count > 0);
+        }
     }
 }

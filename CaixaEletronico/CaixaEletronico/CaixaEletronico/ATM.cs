@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace CaixaEletronico
 {
     public class ATM
@@ -13,7 +12,10 @@ namespace CaixaEletronico
         private Saque saque = new Saque();
 
         public List<int> NotasDisponiveis { get; set; } = new List<int>() {
-            Notas.Cinquenta, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte
+            Notas.Cinquenta,
+            Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte,
+            Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte, Notas.Vinte
+            //Notas.Dez,Notas.Cinco,Notas.Cinco,Notas.Cinco,Notas.Cinco, Notas.Dois,Notas.Dois
         };
 
         public void RenovaSaque()
@@ -23,21 +25,94 @@ namespace CaixaEletronico
 
         public Saque Sacar(int valor)
         {
-            int resto = 0;
-            if ((valor % 2) != 0)
+            var trocado = Utils.CalculaTrocado(valor, NotasDisponiveis);
+            if (trocado.Count > 0)
+            {
+                DescontaValores(valor, trocado);
+                return saque;
+            }
+
+            return new Saque();
+        }
+
+        private int DescontaValor(int valor, int nota, string logMsg)
+        {
+            int resto = valor - nota;
+            saque.HistoricoResto.Add(resto);
+            saque.NotasUsadas.Add(nota);
+            saque.NotasUsadasLog.Add(logMsg);
+            return resto;
+        }
+
+        private int DescontaValor(int valor, int desconto, int nota)
+        {
+            int resto = valor - desconto;
+            saque.HistoricoResto.Add(resto);
+            for (int i = 0; i < desconto / nota; i++) saque.NotasUsadas.Add(nota);
+            saque.NotasUsadasLog.Add($"Foram usadas {desconto / nota} notas de {nota}");
+            return resto;
+        }
+
+        private int DescontaValores(int valor, List<int> notas)
+        {
+            int resto = valor;
+            notas.ForEach(nota =>
+            {
+                resto -= nota;
+                saque.HistoricoResto.Add(resto);
+                saque.NotasUsadas.Add(nota);
+                saque.NotasUsadasLog.Add($"Foi usada uma nota de {nota}; Restou: {resto}");
+            });
+            
+            return resto;
+        }
+
+        public bool SaquePossivelParaValor(int valor)
+        {
+            if (NotasDisponiveis.Sum() > valor)
+            {
+                if (valor % 2 != 0)
+                {
+                    if (!NotaDisponivel(Notas.Cinco))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool NotaDisponivel(int nota)
+        {
+            return NotasDisponiveis.Contains(nota);
+        }
+
+    }
+}
+
+
+
+
+
+/*
+ 
+     
+     if ((valor % 2) != 0)
             {
                 resto = DescontaValor(valor, Notas.Cinco, "Foi usada uma nota de 5");
             }
             else if (valor >= Notas.Cinquenta)
             {
-                var trocado = Utils.GerarTrocado(Notas.Cinquenta, NotasDisponiveis);
+                var trocado = Utils.CalculaTrocado(Notas.Cinquenta, NotasDisponiveis);
                 if (trocado != null && trocado.Count > 0)
                 {
-                    resto = DescontaValores(valor, trocado, $"Foram usadas as seguintes notas: {trocado.Select(x => x.ToString() + ";")}");
+                    resto = DescontaValores(valor, trocado, $"Foram usadas as seguintes notas: {string.Join(", ", trocado)}");
                 }
                 else
                 {
-                    return saque; //rever isto
+                    return new Saque(); //rever isto
                 }
 
             }
@@ -77,62 +152,17 @@ namespace CaixaEletronico
             {
                 resto = DescontaValor(valor, Notas.Dois, $"Foi usada uma nota de {Notas.Dois}");
             }
-
+     
+     
+     
             if (valor == 0)
                 return saque;
-            return Sacar(resto);
-        }
-
-
-
-        private int DescontaValor(int valor, int nota, string logMsg)
-        {
-            int resto = valor - nota;
-            saque.HistoricoResto.Add(resto);
-            saque.NotasUsadas.Add(nota);
-            saque.NotasUsadasLog.Add(logMsg);
-            return resto;
-        }
-
-        private int DescontaValor(int valor, int desconto, int nota)
-        {
-            int resto = valor - desconto;
-            saque.HistoricoResto.Add(resto);
-            for (int i = 0; i < desconto / nota; i++) saque.NotasUsadas.Add(nota);
-            saque.NotasUsadasLog.Add($"Foram usadas {desconto / nota} notas de {nota}");
-            return resto;
-        }
-
-        private int DescontaValores(int valor, List<int> notas, string logMsg)
-        {
-            int resto = valor - notas.Sum();
-            saque.HistoricoResto.Add(resto);
-            saque.NotasUsadas.AddRange(notas);
-            saque.NotasUsadasLog.Add(logMsg);
-            return resto;
-        }
-
-        public bool PossivelSacar(int valor)
-        {
-            if (NotasDisponiveis.Sum() > valor)
-            {
-                if (valor % 2 != 0)
-                {
-                    if (!NotaDisponivel(Notas.Cinco))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool NotaDisponivel(int nota)
-        {
-            return NotasDisponiveis.Contains(nota);
-        }
-
-    }
-}
+     
+     
+     
+     
+     
+     
+     
+     
+     */

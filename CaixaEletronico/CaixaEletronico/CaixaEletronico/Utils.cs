@@ -13,46 +13,53 @@ namespace CaixaEletronico
             Random rand = new Random();
             return rand.Next(0, 1000000);
         }
-
-
-        public static List<int> GerarTrocado(int valor, List<int> notasDisponiveis, List<int> retorno = null)
+        
+        /// <summary>
+        /// Calcula quais notas dentre as disponíveis devem ser usadas
+        /// </summary>
+        /// <param name="valor">O valor que deve ser trocada</param>
+        /// <returns>Caso tudo tenha ocorrido bem, a lista das cédulas que devem ser usadas para retirar esse valor.
+        /// Do contrário, retorna uma lista vazia</returns>
+        public static List<int> CalculaTrocado(int valor, List<int> notasDisponiveis)
         {
             int restante = valor;
-            if (retorno == null) retorno = new List<int>();
-            if (restante >= Notas.Cinquenta && notasDisponiveis.Contains(Notas.Cinquenta))
+            List<int> notasAbaixoValor = notasDisponiveis.Where(x => x <= valor).OrderByDescending(x => x).ToList();
+            List<int> notasUsadas = new List<int>();
+
+            while (restante != 0)
             {
-                restante -= Notas.Cinquenta;
-                retorno.Add(Notas.Cinquenta);
-            }
-            else if (restante >= Notas.Vinte && notasDisponiveis.Contains(Notas.Vinte))
-            {
-                restante -= Notas.Vinte;
-                retorno.Add(Notas.Vinte);
-            }
-            else if (restante >= Notas.Dez && notasDisponiveis.Contains(Notas.Dez))
-            {
-                restante -= Notas.Dez;
-                retorno.Add(Notas.Dez);
-            }
-            else if (restante >= Notas.Cinco && notasDisponiveis.Contains(Notas.Cinco))
-            {
-                restante -= Notas.Cinco;
-                retorno.Add(Notas.Cinco);
-            }
-            else if (restante >= Notas.Dois && notasDisponiveis.Contains(Notas.Dois))
-            {
-                restante -= Notas.Dois;
-                retorno.Add(Notas.Dois);
+                if (restante > 0)
+                {
+                    var nota = (valor % 10 == 0) ? notasAbaixoValor.FirstOrDefault() : notasAbaixoValor.Where(x => x == 5).FirstOrDefault();
+
+                    if (nota > 0)
+                    {
+                        restante -= nota;
+                        notasUsadas.Add(notasAbaixoValor.First());
+                        notasAbaixoValor.Remove(notasAbaixoValor.First());
+                    }
+                    else
+                    {
+                        restante = 0;
+                        notasUsadas.Clear();
+                    }
+
+                    if (restante == 0)
+                    {
+                        return notasUsadas;
+                    }
+                }
+                else if (restante < 0)
+                {
+                    int notaErrada = notasUsadas.Max();
+                    restante += notaErrada;
+                    notasUsadas.Remove(notaErrada); //reverte a ultima nota adicionada
+                }
             }
 
-            if (restante >= 0)
-            {
-                return GerarTrocado(restante, notasDisponiveis, retorno);
-            }
-            else
-            {
-                return retorno;
-            }
+            if (notasUsadas.Count > 0)
+                return notasUsadas;
+            return new List<int>();
         }
 
     }
