@@ -8,7 +8,10 @@ namespace CaixaEletronico
 {
     class Program
     {
-        private static int ini = 2, fin = 87; //valores dos testes
+        public static int Ini { get; set; } = 119; //valores padrão para os cenários dos emails
+        public static int Fin { get; set; } = 120;
+        public static bool IsTestEnv { get; set; } = false;
+
         private static ATM caixa = new ATM();
 
         private static void Main(string[] args)
@@ -22,12 +25,13 @@ namespace CaixaEletronico
             Console.WriteLine(" --|---- Atendimento automatico ------|-- ");
             Console.WriteLine(@"   |  Escolha um dos servicos abaixo  | ");
             Console.WriteLine(@"   v                                  v ");
-            //Console.WriteLine(" 1- Sacar");
-            Console.WriteLine(" 1- Testar");
+            Console.WriteLine(" 1- Sacar");
             Console.WriteLine(" 2- Ver saldo");
-            Console.Write(" 3- Sair\n\n>>> ");
+            Console.WriteLine(" 3- Teste");
+            Console.Write(" 4 - Sair\n\n>>> ");
             try
             {
+                caixa.MostraCedulasDisponiveis();
                 int entry = Convert.ToInt32(Console.ReadLine());
                 RunService(entry);
             }
@@ -39,12 +43,17 @@ namespace CaixaEletronico
             }
         }
 
+
         private static void RunService(int entry)
         {
             switch (entry)
             {
-                case 3:
+                case 4:
                     Environment.Exit(0);
+                    break;
+                case 3:
+                    RunTest();
+                    Menu();
                     break;
                 case 2: //mostrar saldo
                     Console.Clear();
@@ -52,14 +61,8 @@ namespace CaixaEletronico
                     Menu();
                     break;
                 case 1: //sacar
-                    
-                    for (int i = ini; i <= fin; i++)
-                    {
-                        Sacar(i);
-                    }
-                    Console.WriteLine($"O teste correu de {ini} a {fin}");
-                    Console.ReadKey();
-                    //Sacar();
+                    IsTestEnv = false;
+                    Sacar();
                     break;
                 default: // entrada inválida
                     Console.Clear();
@@ -68,17 +71,39 @@ namespace CaixaEletronico
             }
         }
 
+        private static void RunTest()
+        {
+            IsTestEnv = true;
+
+            Console.WriteLine("Digite o valor de inicio do teste: ");
+            Ini = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Digite o valor final do teste: ");
+            Fin = Convert.ToInt32(Console.ReadLine());
+
+
+            for (int i = Ini; i <= Fin; i++)
+            {
+                Sacar(i);
+            }
+            Console.WriteLine($"O teste correu de {Ini} a {Fin}");
+            Console.ReadKey();
+        }
+
         private static void Sacar(int iTeste = 0)
         {
-            //Console.Clear();
-           
+            if (!IsTestEnv)
+                Console.Clear();
+
             caixa.RenovaSaque();
-            //Console.WriteLine("Digite o valor que deseja sacar: ");
+            if (!IsTestEnv)
+                Console.WriteLine("Digite o valor que deseja sacar: ");
             try
             {
-                //int valor = Convert.ToInt32(Console.ReadLine());
                 int valor = iTeste;
-                Console.WriteLine($"-----Iniciando saque {valor}-----");
+                if (!IsTestEnv)
+                    valor = Convert.ToInt32(Console.ReadLine());
+                if (IsTestEnv)
+                    Console.WriteLine($"-----Iniciando saque {valor}-----");
                 var verificacaoOk = VerificacaoInicial(valor);
 
                 if (verificacaoOk)
@@ -91,23 +116,26 @@ namespace CaixaEletronico
                         for (int i = 0; i < saqueResultado.HistoricoResto.Count; i++)
                         {
                             Console.Write($"{saqueResultado.NotasUsadasLog[i]}\n\n");
-                        } 
+                        }
                         int somaSaque = saqueResultado.NotasUsadas.Sum();
                         Console.WriteLine($"Soma das notas usadas: {somaSaque}");
                         caixa.Saldo -= somaSaque;
-                        //Menu();
+                        if (!IsTestEnv)
+                            Menu();
                     }
                     else
                     {
-                        //MsgCedulasInsuficientes();
-                        Console.WriteLine($"Mensagem de Cedulas insuficientes. NotasUsadas: {saqueResultado.NotasUsadas.Count}; NotasUsadasLog: {saqueResultado.NotasUsadasLog.Count}; HistoricoResto: {saqueResultado.HistoricoResto.Count}");
+                        if (!IsTestEnv)
+                            MsgCedulasInsuficientes();
+                        else
+                            Console.WriteLine($"Mensagem de Cedulas insuficientes. NotasUsadas: {saqueResultado.NotasUsadas.Count}; NotasUsadasLog: {saqueResultado.NotasUsadasLog.Count}; HistoricoResto: {saqueResultado.HistoricoResto.Count}");
                     }
                 }
                 else
                 {
                     Console.WriteLine($"Verificação Inicial falhou com o valor {valor}");
                 }
-                
+
             }
             catch (FormatException ex)
             {
@@ -115,7 +143,8 @@ namespace CaixaEletronico
                 Console.Write($"Valor inválido. Por favor entre com um valor inteiro em reais, sem pontos, virgulas ou qualquer tipo de simbolo.\n\n");
                 Menu();
             }
-            Console.WriteLine("____Fim saque____\n");
+            if (IsTestEnv)
+                Console.WriteLine("____Fim saque____\n");
         }
 
         private static bool VerificacaoInicial(int valor)
@@ -142,23 +171,29 @@ namespace CaixaEletronico
 
         private static void MsgSaldoInsuficiente()
         {
-            //Console.Clear();
+            if (!IsTestEnv)
+                Console.Clear();
             Console.Write($"Erro: Saldo insuficiente!\n\n");
-            //Menu();
+            if (!IsTestEnv)
+                Menu();
         }
 
         private static void MsgMoedas()
         {
-            //Console.Clear();
+            if (!IsTestEnv)
+                Console.Clear();
             Console.Write($"Erro: Para o saque de moedas, visite o caixa!\n\n");
-            //Menu();
+            if (!IsTestEnv)
+                Menu();
         }
 
         private static void MsgCedulasInsuficientes()
         {
-            //Console.Clear();
+            if (!IsTestEnv)
+                Console.Clear();
             Console.Write($"Erro: Cédulas insuficientes para realizar o saque!\n\n");
-            //Menu();
+            if (!IsTestEnv)
+                Menu();
         }
     }
 }

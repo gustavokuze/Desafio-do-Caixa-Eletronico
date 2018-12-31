@@ -15,12 +15,12 @@ namespace CaixaEletronico
         
         public ATM()
         {
-            //numero inicial de cada nota para teste
-            int notas50 = (30);
-            int notas20 = (60);
-            int notas10 = (80);
-            int notas5 = (160);
-            int notas2 = (320);
+            //numero inicial de cada nota
+            int notas50 = (5);
+            int notas20 = (10);
+            int notas10 = (15);
+            int notas5 = (10);
+            int notas2 = (25);
             for (int i = 0; i < notas50; i++)
             {
                 NotasDisponiveis.Add(Notas.Cinquenta);
@@ -54,15 +54,24 @@ namespace CaixaEletronico
             if (trocado.Count > 0)
             {
                 DescontaValores(valor, trocado);
-                Console.WriteLine("-(( Valores descontados com sucesso, baseados no retorno da função CalculaTroco ))-");
-                Console.WriteLine($"-(( Cedulas disponiveis: 50 = { NotasDisponiveis.Where(x=>x==50).Count() }; 20 = { NotasDisponiveis.Where(x => x == 20).Count() }; 10 = { NotasDisponiveis.Where(x => x == 10).Count() }; 5 = { NotasDisponiveis.Where(x => x == 5).Count() }; 2 = { NotasDisponiveis.Where(x => x == 2).Count() } ))-");
+                if (Program.IsTestEnv)
+                {
+                    Console.WriteLine("-(( Valores descontados com sucesso, baseados no retorno da função CalculaTroco ))-");
+                    MostraCedulasDisponiveis();                }
+                    
                 return saque;
             }
-            Console.WriteLine("-(( Erro: A função CalculaTroco retornou vazio ))-");
+            if (Program.IsTestEnv)
+                Console.WriteLine("-(( Erro: A função CalculaTroco retornou vazio ))-");
             return new Saque();
         }
-        
-        
+
+
+        public void MostraCedulasDisponiveis()
+        {
+            Console.WriteLine($"-(( Cedulas disponiveis: 50 = { NotasDisponiveis.Where(x => x == 50).Count() }; 20 = { NotasDisponiveis.Where(x => x == 20).Count() }; 10 = { NotasDisponiveis.Where(x => x == 10).Count() }; 5 = { NotasDisponiveis.Where(x => x == 5).Count() }; 2 = { NotasDisponiveis.Where(x => x == 2).Count() } ))-");
+        }
+
         private int DescontaValores(int valor, List<int> notas)
         {
             int resto = valor;
