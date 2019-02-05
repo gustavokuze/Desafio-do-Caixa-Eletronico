@@ -11,3 +11,5 @@ Escreva um programa que, dado o valor solicitado pelo cliente, determine o núme
 __Exemplo 1__: Se o cliente deseja retirar R$ 50,00, basta entregar uma única nota de cinquenta reais.
 
 __Exemplo 2__: Se o cliente deseja retirar R$ 92,00, é necessário entregar uma nota de R$50,00, duas de R$ 20,00 e uma de R$2,00.
+
+__Nota__: A versão completa está no branch limite-cedulas
